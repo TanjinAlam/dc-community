@@ -1,6 +1,13 @@
 # Pear Social
 
-A fully decentralized, peer-to-peer social network built on the Hypercore Protocol. No servers. No central authority. Your data lives on your device and replicates directly to your peers over the internet.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+[![Tests](https://img.shields.io/badge/tests-85%20passing-success.svg)](#run-tests)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux%20%7C%20PWA-blue.svg)](#)
+
+A **decentralized, end-to-end encrypted** peer-to-peer social network built on the [Hypercore Protocol](https://docs.pears.com/). No servers. No company. No central authority. Your data lives on your device and replicates directly to your peers.
+
+> **Honest about privacy:** Pear Social is decentralized and your content is encrypted, but it is **not an anonymity tool**. See the [Privacy & Security Model](#privacy--security-model) below for exactly what is and isn't protected — we'd rather tell you the truth than make claims that put you at risk.
 
 ## What it is
 
@@ -283,3 +290,91 @@ lsof -ti:7777 | xargs kill
 
 **`__filename is not defined` / ESM errors**
 Do not add `"type": "module"` to `package.json`. The Hypercore stack uses CJS native modules that are incompatible with ESM mode.
+
+**No audio on calls**
+Check the in-call diagnostic bar (`mic / ICE / rx audio / peers`). If `ICE` is stuck at `new`, candidates aren't being exchanged; if `mic: off`, grant microphone access in System Settings → Privacy → Microphone.
+
+---
+
+## Privacy & Security Model
+
+We believe security claims should be precise. Here is exactly what Pear Social protects — and what it does not.
+
+### ✅ What is protected
+
+| Property | How |
+|----------|-----|
+| **No central server** | All data lives in your own [Hypercore](https://docs.pears.com/building-blocks/hypercore). There is no company database, no account server, nothing to subpoena or breach centrally. |
+| **No accounts, no passwords** | Your identity is an Ed25519 keypair generated locally on first launch. Nobody issues it; nobody can revoke it. |
+| **Encrypted data replication** | Hypercore connections use the [Noise protocol](http://www.noiseprotocol.org/) — data in transit between peers is encrypted. |
+| **End-to-end encrypted calls** | Audio/video uses WebRTC **DTLS-SRTP**, which is mandatory and cannot be disabled. Call *content* is never readable by any relay. |
+| **You own your data** | Posts, votes, comments, and DMs are stored in your device's append-only log. No third party holds the master copy. |
+| **Open source & auditable** | Every line is in this repo. You can read, build, and verify exactly what the app does. |
+
+### ⚠️ What is NOT protected (read this carefully)
+
+Pear Social is **decentralized, not anonymous.** It is **not** a replacement for Tor, Signal, or a VPN.
+
+| Limitation | What it means for you |
+|------------|----------------------|
+| **Metadata is visible** | Pear Social uses the public Hyperswarm DHT. A network observer (your ISP, anyone watching the DHT) can see that your IP address is participating in the network and which peers you connect to — even though they can't read your content. |
+| **Calls reveal your IP to the other party** | This is inherent to peer-to-peer WebRTC. The person you call learns your IP address. Content is encrypted; the connection itself is not hidden. |
+| **Friends hold copies of your data** | When you post and a friend replicates it, they have a full plaintext copy on their device. You cannot un-send or guarantee deletion of replicated data. |
+| **Optional STUN/TURN sees your IP** | If you enable a STUN/TURN server for calls across networks (see [TURN-SERVER.md](./TURN-SERVER.md)), that server sees your IP address (but not call content). |
+| **No traffic-analysis resistance** | Timing, volume, and connection patterns are observable. This is not designed to hide *that* you are communicating, only to protect *what* you communicate and to remove central control. |
+| **PWA bridge is local-network** | The phone PWA talks to your desktop over a LAN WebSocket (challenge/response authenticated). Treat it as trusted-LAN-only. |
+
+### Threat model summary
+
+**Pear Social is a good fit if you want:** freedom from corporate data harvesting, no central point of censorship or failure, ownership of your social graph, and encrypted content.
+
+**Pear Social is NOT a fit if you need:** anonymity from a network-level adversary, protection of *who* you talk to and *when*, or deniability. For those threat models, use purpose-built tools (Tor, Signal).
+
+If you discover a security issue, please follow [SECURITY.md](./SECURITY.md) — do not open a public issue.
+
+---
+
+## Contributing
+
+Contributions are very welcome — this is a community project. Please read **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the full workflow and **[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)** for community standards.
+
+Quick version:
+
+```bash
+# 1. Fork and clone
+git clone https://github.com/<your-username>/dc-community.git
+cd dc-community
+
+# 2. Install + verify the suite passes
+npm install
+npm test          # 85 tests should pass
+
+# 3. Branch, change, test
+git checkout -b feat/my-change
+npm test          # keep it green
+
+# 4. Push and open a Pull Request
+```
+
+**Ground rules:**
+- All new P2P logic goes in `src/p2p/` with matching tests in `tests/`.
+- Keep `npm test` green — PRs with failing tests won't be merged.
+- UI changes don't need tests, but the P2P layer always does.
+- Be honest in security-related docs and code comments. No overclaiming.
+
+Good first issues are labeled [`good first issue`](https://github.com/TanjinAlam/dc-community/labels/good%20first%20issue).
+
+---
+
+## License
+
+[MIT](./LICENSE) © 2026 Tanjin Alam and Pear Social contributors.
+
+You are free to use, modify, and distribute this software, including commercially, with attribution. There is no warranty.
+
+---
+
+## Acknowledgements
+
+Built on the open-source [Hypercore / Pears](https://docs.pears.com/) stack by Holepunch:
+Hypercore, Hyperbee, Hyperdrive, Hyperswarm, Corestore, Autobase, Protomux, and Bare.
