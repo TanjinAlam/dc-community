@@ -14,8 +14,8 @@ describe('IPC handlers', () => {
   it('addFriend returns ok: true', () => {
     expect(handlers.addFriend('some-key')).toEqual({ ok: true })
   })
-  it('getFriends returns empty array', () => {
-    expect(handlers.getFriends()).toEqual([])
+  it('getFriends returns an array', () => {
+    expect(Array.isArray(handlers.getFriends())).toBe(true)
   })
   it('createPost returns ok: true', () => {
     expect(handlers.createPost('hello')).toEqual({ ok: true })

@@ -1,6 +1,7 @@
 import Corestore from 'corestore'
 import b4a from 'b4a'
 import Hyperbee from 'hyperbee'
+import { indexForSearch } from './search.js'
 
 export async function initStore(dataPath) {
   const store = new Corestore(dataPath)
@@ -39,6 +40,7 @@ export async function indexBlock(bee, pubkey, block, seqNo) {
     await bee.put(key, { ...block, author: pubkey })
   }
   // unknown types: do nothing
+  await indexForSearch(bee, block, pubkey)
 }
 
 export async function getFeed(bee) {

@@ -8,15 +8,30 @@ function relativeTime(ts) {
   return `${Math.floor(hr / 24)}d ago`
 }
 
+import { useState, useEffect } from 'react'
+
 export default function PostCard({ post }) {
   const authorShort = post.author ? post.author.slice(0, 2).toUpperCase() : '?'
   const authorKey = post.author ? post.author.slice(0, 8) + '...' : 'unknown'
+  const [avatarDataUrl, setAvatarDataUrl] = useState(null)
+
+  useEffect(() => {
+    if (post.driveKey && window.pear?.getAvatar) {
+      window.pear.getAvatar(post.driveKey).then(result => {
+        if (result) setAvatarDataUrl(`data:${result.mimeType};base64,${result.base64}`)
+      })
+    }
+  }, [post.driveKey])
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-4 flex gap-3">
-      <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600 flex-shrink-0">
-        {authorShort}
-      </div>
+      {avatarDataUrl ? (
+        <img src={avatarDataUrl} alt="avatar" className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
+      ) : (
+        <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600 flex-shrink-0">
+          {authorShort}
+        </div>
+      )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-xs font-mono text-gray-500">{authorKey}</span>
