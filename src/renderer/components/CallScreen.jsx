@@ -86,9 +86,12 @@ export default function CallScreen({ callId, participants, isVideo, callerKey, o
     pc.onicecandidate = ({ candidate }) => {
       if (!candidate) return
       console.log('[call] ICE candidate:', candidate.type)
+      // CRITICAL: RTCIceCandidate properties are prototype getters that do NOT
+      // survive IPC/JSON serialization (arrives as {}). Convert to a plain
+      // object via toJSON() so the peer can actually use addIceCandidate().
       window.pear.sendCallSignal(peerKey, {
         type: 'ice-candidate', callId,
-        fromKey: myKeyRef.current, toKey: peerKey, candidate
+        fromKey: myKeyRef.current, toKey: peerKey, candidate: candidate.toJSON()
       })
     }
 
